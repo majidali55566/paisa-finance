@@ -1,6 +1,7 @@
 import { Transaction, CreateTransaction } from "@/schemas/TransactionSchema";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { Key } from "lucide-react";
 
 export const createTransaction = createAsyncThunk<
   Transaction,
@@ -22,9 +23,9 @@ export const createTransaction = createAsyncThunk<
 
 export const getAccountTransactions = createAsyncThunk<
   Transaction[],
-  string,
+  { accountId: string },
   { rejectValue: string }
->("transactions/account/get", async (accountId, { rejectWithValue }) => {
+>("transactions/account/get", async ({ accountId }, { rejectWithValue }) => {
   try {
     const response = await axios.get(`/api/accounts/${accountId}/transactions`);
     return response.data.transactions as Transaction[];

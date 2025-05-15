@@ -73,7 +73,6 @@ export async function POST(
 
 export async function GET(
   req: NextRequest,
-
   {
     params,
   }: {
@@ -82,8 +81,10 @@ export async function GET(
 ) {
   await dbConnect();
   const session = await getServerSession(authOptions);
-  if (!session?.user?._id)
+
+  if (!session?.user?._id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
   const { accountId } = params;
 
@@ -93,17 +94,19 @@ export async function GET(
       { status: 400 }
     );
   }
+
   try {
     const transactions = await TransactionModel.find({
       userId: session.user._id,
       accountId,
     }).sort({ transactionDate: -1 });
+
     return NextResponse.json(
       { message: "Transactions fetched successfully", transactions },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error getting all trasactions of the account:", error);
+    console.error("Error getting transactions:", error);
     return NextResponse.json(
       { message: "Failed to get transactions" },
       { status: 500 }

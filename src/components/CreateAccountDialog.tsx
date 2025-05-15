@@ -93,18 +93,14 @@ export function CreateAccountDialog() {
         }
       }}
     >
-      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
-        <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
-          <CardHeader />
-          <CardContent>
-            <div className="flex flex-col items-center justify-center gap-2 h-full">
-              <Plus className="text-muted-foreground" />
-              <p className="text-sm text-muted-foreground text-center">
-                Add New Account
-              </p>
+      <DialogTrigger asChild>
+        <Card className="cursor-pointer hover:bg-muted/50 transition-colors h-30 flex items-center justify-center p-6 border-dashed border-2 hover:border-solid hover:border-primary/20">
+          <div className="flex flex-col items-center gap-3">
+            <div className="bg-primary/10 p-3 rounded-full">
+              <Plus className="h-5 w-5 text-primary" />
             </div>
-          </CardContent>
-          <CardFooter className="p-1" />
+            <p className="font-medium text-sm">Add New Account</p>
+          </div>
         </Card>
       </DialogTrigger>
 

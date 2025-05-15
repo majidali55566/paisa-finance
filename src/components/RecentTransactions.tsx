@@ -1,13 +1,15 @@
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useAppSelector } from "@/app/hooks";
 import { AccountSelect } from "./AccountSelect";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo } from "react";
-import { getAccountTransactions } from "@/app/features/transactions/transactionsApi";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Clock, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils"; // Optional: for className merging
+import axios from "axios";
+import { Transaction } from "../schemas/TransactionSchema";
+import { Badge } from "./ui/badge";
 
 const accountIdSchema = z.object({
   accountId: z.string({ required_error: "Account selection is required" }),
@@ -16,12 +18,12 @@ const accountIdSchema = z.object({
 type AccountIdFormValues = z.infer<typeof accountIdSchema>;
 
 const RecentTransactions = () => {
-  const { accounts, defaultAccountId, fetchStatus } = useAppSelector(
+  const { accounts, defaultAccountId } = useAppSelector(
     (state) => state.accounts
   );
-  const { transactions } = useAppSelector((state) => state.transactions);
-  const dispatch = useAppDispatch();
 
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<AccountIdFormValues>({
     resolver: zodResolver(accountIdSchema),
     defaultValues: {
@@ -31,85 +33,105 @@ const RecentTransactions = () => {
 
   const selectedAccountId = form.watch("accountId");
 
-  const memoizedAccounts = useMemo(() => accounts, [accounts]);
-
-  // useEffect(() => {
-  //   if (defaultAccountId) {
-  //     form.setValue("accountId", selectedAccountId);
-  //     fetchTransactions(defaultAccountId);
-  //   }
-  // }, [defaultAccountId]);
-
-  // useEffect(() => {
-  //   if (selectedAccountId) {
-  //     form.setValue("accountId", selectedAccountId);
-  //     fetchTransactions(selectedAccountId);
-  //   }
-  // }, [selectedAccountId]);
-
   useEffect(() => {
-    const accountId = selectedAccountId || defaultAccountId;
-    if (accountId) {
-      fetchTransactions(accountId);
-    }
-  }, [selectedAccountId, defaultAccountId]);
+    const getAccountTransactions = async () => {
+      setIsSubmitting(true);
+      try {
+        const accountId = selectedAccountId || defaultAccountId;
+        if (accountId) {
+          const response = await axios.get(
+            `/api/accounts/${accountId}/transactions`
+          );
+          console.log(response.data);
+          if (response.status === 200)
+            setTransactions(response.data.transactions);
+        }
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
 
-  const fetchTransactions = async (accountId: string) => {
-    try {
-      const result = await dispatch(getAccountTransactions(accountId));
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    }
-  };
+    getAccountTransactions();
+  }, [selectedAccountId, defaultAccountId]);
 
   return (
     <div className="space-y-4">
       <FormProvider {...form}>
         <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold">Recent Transactions</h2>
+          <h2 className="font-semibold">Recent Transactions</h2>
           <AccountSelect
-            accounts={memoizedAccounts}
+            accounts={accounts}
             value={form.getValues("accountId")}
             onValueChange={(value) => form.setValue("accountId", value)}
             className="min-w-[200px]"
           />
         </div>
 
-        {transactions.map((transaction) => (
-          <div key={transaction._id} className="">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className=" max-w-[10rem] md:max-w-[15rem] truncate">
-                  {transaction.description || "No description"}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {format(transaction.transactionDate!, "dd MMMM yyyy, h:mm a")}
-                </p>
-              </div>
-              <div className="flex items-end flex-col">
-                <p
-                  className={`font-medium flex items-center ${
-                    transaction.type === "expense"
-                      ? "text-red-500"
-                      : "text-green-500"
-                  }`}
-                >
-                  {transaction.type === "expense" ? (
-                    <ArrowDownRight className="text-red-500" size={16} />
-                  ) : (
-                    <ArrowUpRight className="text-green-500" size={16} />
+        {isSubmitting ? (
+          <div className="flex justify-center items-center h-24">
+            <Loader2 className="animate-spin text-muted-foreground" size={32} />
+          </div>
+        ) : transactions.length === 0 ? (
+          <p className="text-sm text-gray-500">No transactions found.</p>
+        ) : (
+          transactions.slice(0, 6).map((transaction) => (
+            <div
+              key={transaction._id}
+              className="border-b border-gray-200 pb-2"
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm max-w-[10rem] md:max-w-[15rem] truncate">
+                    {transaction.description || "No description"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {format(
+                      transaction.transactionDate!,
+                      "dd MMMM yyyy, h:mm a"
+                    )}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end">
+                  <p
+                    className={cn(
+                      "font-medium flex items-center",
+                      transaction.type === "expense"
+                        ? "text-red-500"
+                        : "text-green-500"
+                    )}
+                  >
+                    {transaction.type === "expense" ? (
+                      <ArrowDownRight size={16} className="mr-1" />
+                    ) : (
+                      <ArrowUpRight size={16} className="mr-1" />
+                    )}
+                    {transaction.amount}
+                  </p>
+                  {transaction.isRecurring && (
+                    <Badge variant="outline">
+                      <Clock />
+                      {transaction.recurringInterval}
+                    </Badge>
                   )}
-                  {transaction.amount}
-                </p>
-                <p className="text-xs">
-                  {transaction.isRecurring && "Recurring-"}
-                  {transaction.isRecurring && transaction.recurringInterval}
-                </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </FormProvider>
+
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-1">
+          <ArrowUpRight className="text-green-500" size={16} />
+          <span>Income</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <ArrowDownRight className="text-red-500" size={16} />
+          <span>Expense</span>
+        </div>
+      </div>
     </div>
   );
 };
