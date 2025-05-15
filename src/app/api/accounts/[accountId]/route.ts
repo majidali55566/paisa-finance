@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import TransactionModel from "@/models/transaction";
 
 interface AccountParams {
-  id: string;
+  accountId: string;
 }
 
 export async function GET(
@@ -22,7 +22,7 @@ export async function GET(
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const accountId = params.id;
+  const { accountId } = params;
   if (!mongoose.Types.ObjectId.isValid(accountId)) {
     return NextResponse.json(
       { message: "Invalid account ID" },

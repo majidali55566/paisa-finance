@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema } from "mongoose"; // Make sure Model is imported for explicit typing
+import mongoose, { Document, Model, Schema } from "mongoose";
 
 export enum AccountType {
   CURRENT = "current",
@@ -14,7 +14,7 @@ export interface IAccount extends Document {
   updatedAt?: Date;
 }
 
-const AccountMongoSchema: Schema<IAccount> = new Schema<IAccount>( // Changed variable name for clarity from your Zod schema
+const AccountMongoSchema: Schema<IAccount> = new Schema<IAccount>(
   {
     userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
     name: { type: String, required: true },

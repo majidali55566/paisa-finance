@@ -1,7 +1,6 @@
 import { Transaction, CreateTransaction } from "@/schemas/TransactionSchema";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Key } from "lucide-react";
 
 export const createTransaction = createAsyncThunk<
   Transaction,

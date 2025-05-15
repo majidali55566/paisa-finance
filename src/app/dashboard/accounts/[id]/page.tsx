@@ -1,14 +1,81 @@
 "use client";
+import AccountBalanceManager from "@/components/AccountBalanceStatics";
+import { Account } from "@/schemas/AccountSchema";
+import { Transaction } from "@/schemas/TransactionSchema";
+import axios from "axios";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { TransactionsTable } from "@/components/TransactionsTable";
 
 export default function AccountPage() {
   const params = useParams();
-  const id = params?.id;
+  const accountId = params?.id as string;
+
+  const [account, setAccount] = useState<Account | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]); // Changed to array
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAccountData = async () => {
+      try {
+        setLoading(true);
+        const [accountResponse, transactionsResponse] = await Promise.all([
+          axios.get<{ account: Account }>(`/api/accounts/${accountId}`),
+          axios.get<{ transactions: Transaction[] }>(
+            `/api/accounts/${accountId}/transactions`
+          ),
+        ]);
+
+        setAccount(accountResponse.data.account);
+        setTransactions(transactionsResponse.data.transactions);
+      } catch (err) {
+        console.error("Error fetching account data:", err);
+        setError("Failed to load account data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (accountId) {
+      fetchAccountData();
+    }
+  }, [accountId]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8 text-red-500">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  if (!account) {
+    return (
+      <div className="text-center py-8">
+        <p>Account not found</p>
+      </div>
+    );
+  }
+
+  console.log(transactions);
 
   return (
-    <div>
-      <h1>Transactions for Account {id}</h1>
-      {/* Fetch or render transactions for account {id} */}
+    <div className="mx-auto pt-6 md:pt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="grid">
+        <h1 className="text-2xl font-bold mb-6">Account: {account.name}</h1>
+        <AccountBalanceManager account={account} transactions={transactions} />
+        <TransactionsTable data={transactions} />
+      </div>
     </div>
   );
 }

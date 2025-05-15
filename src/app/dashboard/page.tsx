@@ -6,15 +6,15 @@ import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { changeDefaultAccount } from "../features/accounts/accountsapi";
 import AccountCard from "@/components/AccountCard";
-import { AccountSelect } from "@/components/AccountSelect";
 import RecentTransactions from "@/components/RecentTransactions";
 import { MonthlyExpensePieChart } from "@/components/MonthlyExpensePieChart";
+import AccountBalanceStatics from "@/components/AccountBalanceStatics";
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const { accounts, fetchStatus, error, changeDefault } = useAppSelector(
-    (state) => state.accounts
-  );
+  const { accounts, fetchStatus, error, changeDefault, defaultAccountId } =
+    useAppSelector((state) => state.accounts);
+  const { transactions } = useAppSelector((state) => state.transactions);
 
   const handleDefaultAccountChange = async (accountId: string) => {
     try {
@@ -29,10 +29,17 @@ const Dashboard = () => {
       console.log("Error changing default account", error);
     }
   };
+  const defaultAccount = accounts.find((acc) => acc.isDefault) || accounts[0];
 
   return (
     <div className="pt-22 md:pt-25">
       <div className="grid gap-4">
+        <div>
+          <AccountBalanceStatics
+            account={defaultAccount}
+            transactions={transactions}
+          />
+        </div>
         <div className="flex justify-around flex-wrap gap-4 ">
           <RecentTransactions />
           <MonthlyExpensePieChart />
@@ -61,14 +68,16 @@ const Dashboard = () => {
                 </p>
               </div>
             ) : (
-              accounts.map((account) => (
-                <AccountCard
-                  changeDefault={changeDefault}
-                  key={account._id}
-                  account={account}
-                  onToggleDefault={handleDefaultAccountChange}
-                />
-              ))
+              <div className="flex flex-wrap gap-4 mx-auto justify-center items-center">
+                {accounts.map((account) => (
+                  <AccountCard
+                    changeDefault={changeDefault}
+                    key={account._id}
+                    account={account}
+                    onToggleDefault={handleDefaultAccountChange}
+                  />
+                ))}
+              </div>
             )}
           </div>
         </div>

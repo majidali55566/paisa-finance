@@ -1,10 +1,10 @@
-import TransactionModel from "@/models/transaction";
+import TransactionModel, { RecurringInterval } from "@/models/transaction";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../../auth/[...nextauth]/options";
 import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
-
+import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 export async function POST(
   req: NextRequest,
   { params }: { params: { accountId: string } }
@@ -15,6 +15,7 @@ export async function POST(
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const { accountId } = params;
+
   try {
     const {
       amount,
@@ -25,7 +26,6 @@ export async function POST(
       receiptUrl,
       isRecurring = false,
       recurringInterval,
-      nextRecurringDate,
       lastProcessed,
       status,
     } = await req.json();
@@ -35,6 +35,21 @@ export async function POST(
         { message: "Invalid account ID" },
         { status: 400 }
       );
+    }
+
+    let nextRecurringDate: Date | undefined = undefined;
+
+    if (isRecurring && recurringInterval) {
+      const baseDate = transactionDate ? new Date(transactionDate) : new Date();
+      if (recurringInterval === RecurringInterval.DAILY) {
+        nextRecurringDate = addDays(baseDate, 1);
+      } else if (recurringInterval === RecurringInterval.WEEKLY) {
+        nextRecurringDate = addWeeks(baseDate, 1);
+      } else if (recurringInterval === RecurringInterval.MONTHLY) {
+        nextRecurringDate = addMonths(baseDate, 1);
+      } else if (recurringInterval === RecurringInterval.YEARLY) {
+        nextRecurringDate = addYears(baseDate, 1);
+      }
     }
 
     const newTransaction = new TransactionModel({

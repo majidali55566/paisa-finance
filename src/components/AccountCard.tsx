@@ -5,12 +5,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowDownRight, ArrowUpRight, PiggyBank, Wallet } from "lucide-react";
+import { PiggyBank, Wallet } from "lucide-react";
 
 import { Switch } from "@/components/ui/switch";
 import { Account } from "@/schemas/AccountSchema";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { useRouter } from "next/navigation";
 const AccountCard = ({
   account,
   onToggleDefault,
@@ -21,8 +22,13 @@ const AccountCard = ({
 }) => {
   const AccountIcon = account.accountType === "current" ? Wallet : PiggyBank;
 
+  const router = useRouter();
+
   return (
-    <Card key={account._id} className="w-[250px]">
+    <Card
+      key={account._id}
+      className="min-w-[15rem] flex flex-wrap justify-between"
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <AccountIcon color="gray" />
@@ -42,7 +48,14 @@ const AccountCard = ({
         </div>
       </CardContent>
       <CardFooter className="flex justify-between text-sm text-muted-foreground">
-        <Button className="text-xs">View details</Button>
+        <Button
+          onClick={() => {
+            router.push(`/dashboard/accounts/${account._id}`);
+          }}
+          className="text-xs"
+        >
+          View details
+        </Button>
       </CardFooter>
     </Card>
   );

@@ -68,7 +68,6 @@ const AddTransactionPage = () => {
       subcategory: "",
       receiptUrl: "",
       isRecurring: false,
-      recurringInterval: RecurringInterval.WEEKLY,
       status: TransactionStatus.COMPLETED,
     },
   });
