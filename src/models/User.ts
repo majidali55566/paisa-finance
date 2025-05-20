@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
 export enum AuthProvider {
   CREDENTIALS = "credentials",
@@ -53,8 +53,10 @@ const UserSchema: Schema<IUser> = new Schema({
   },
 });
 
-const UserModel =
-  (mongoose.models.User as mongoose.Model<IUser>) ||
+type UserModelType = Model<IUser>;
+
+const UserModel: UserModelType =
+  (mongoose.models?.User as UserModelType) ||
   mongoose.model<IUser>("User", UserSchema);
 
 export default UserModel;

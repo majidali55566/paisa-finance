@@ -1,21 +1,32 @@
 "use client";
 import { CreateAccountDialog } from "@/components/CreateAccountDialog";
-
 import { Ban, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { changeDefaultAccount } from "../features/accounts/accountsapi";
+import {
+  changeDefaultAccount,
+  fetchAllAccounts,
+} from "../features/accounts/accountsapi";
 import AccountCard from "@/components/AccountCard";
 import RecentTransactions from "@/components/RecentTransactions";
 import { MonthlyExpensePieChart } from "@/components/MonthlyExpensePieChart";
 import AccountBalanceStatics from "@/components/AccountBalanceStatics";
+import { useEffect, useState } from "react";
+import { Account } from "@/schemas/AccountSchema";
+import EditAccountDialog from "@/components/EditAccountDialog";
+import { clearAccountError } from "../features/accounts/accountSlice";
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const { accounts, fetchStatus, error, changeDefault, defaultAccountId } =
+  const { accounts, fetchStatus, updateStatus, error, changeDefault } =
     useAppSelector((state) => state.accounts);
-  const { transactions } = useAppSelector((state) => state.transactions);
 
+  const [isEditAccountDialogOpen, setEditAccountDialogOpen] = useState(false);
+  const [isAccountEditing, setAccountEditing] = useState(false);
+
+  const { transactions } = useAppSelector((state) => state.transactions);
+  const [selectedAccountForDialog, setselectedAccountForDialog] =
+    useState<Account | null>(null);
   const handleDefaultAccountChange = async (accountId: string) => {
     try {
       const result = await dispatch(changeDefaultAccount(accountId));
@@ -27,35 +38,66 @@ const Dashboard = () => {
     } catch (error) {
       toast.error("unexpected error occurred");
       console.log("Error changing default account", error);
+    } finally {
+      setAccountEditing(false);
     }
   };
+  useEffect(() => {
+    if (updateStatus === "succeeded") {
+      dispatch(fetchAllAccounts());
+    } else if (updateStatus === "failed") {
+      dispatch(clearAccountError());
+    }
+  }, [updateStatus, dispatch]);
+
   const defaultAccount = accounts.find((acc) => acc.isDefault) || accounts[0];
+  const handleEdit = (account: Account) => {
+    setselectedAccountForDialog(account);
+    setEditAccountDialogOpen(true);
+  };
+  const handleClose = () => {
+    setEditAccountDialogOpen(!isEditAccountDialogOpen);
+    setselectedAccountForDialog(null);
+  };
+
+  if (fetchStatus === "loading") {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="mr-2 h-8 w-8 animate-spin" />
+        <span>Loading dashboard...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-22 md:pt-25">
-      <div className="grid gap-4">
-        <div>
-          <AccountBalanceStatics
-            account={defaultAccount}
-            transactions={transactions}
+      <div className="grid gap-6">
+        {defaultAccount && (
+          <div>
+            <AccountBalanceStatics
+              account={defaultAccount}
+              transactions={transactions}
+            />
+          </div>
+        )}
+        {selectedAccountForDialog && (
+          <EditAccountDialog
+            account={selectedAccountForDialog!}
+            isOpen={isEditAccountDialogOpen}
+            onOpenClose={handleClose}
           />
-        </div>
-        <div className="flex justify-around flex-wrap gap-4 ">
+        )}
+
+        <div className="flex justify-around flex-wrap gap-4">
           <RecentTransactions />
           <MonthlyExpensePieChart />
           <CreateAccountDialog />
         </div>
-        <div className="grid  gap-4">
+
+        <div className="grid gap-4">
           <h1 className="text-xl font-semibold">Your accounts</h1>
           <div className="flex flex-wrap gap-4 items-center">
-            {fetchStatus === "loading" ? (
-              <div className="text-muted-foreground mt-6 text-center w-full">
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading Accounts...
-                </>
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="text-red-500 mt-6 w-full text-center">
                 <p>Error: {error}</p>
               </div>
@@ -74,6 +116,7 @@ const Dashboard = () => {
                     changeDefault={changeDefault}
                     key={account._id}
                     account={account}
+                    onHandleEdit={handleEdit}
                     onToggleDefault={handleDefaultAccountChange}
                   />
                 ))}
@@ -85,4 +128,5 @@ const Dashboard = () => {
     </div>
   );
 };
+
 export default Dashboard;

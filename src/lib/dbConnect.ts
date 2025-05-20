@@ -1,29 +1,37 @@
+// src/lib/dbConnect.ts
 import mongoose from "mongoose";
+import { loadEnv } from "@/lib/env";
+loadEnv();
 
-type ConnectionObject = {
-  isConnected?: number;
-};
+export default async function dbConnect(): Promise<void> {
+  // Return if already connected
+  if (mongoose.connection.readyState === 1) return;
 
-const connection: ConnectionObject = {};
-
-async function dbConnect(): Promise<void> {
-  if (connection.isConnected) {
-    console.log("Already connected to database");
-    return;
-  }
   try {
-    // Attempt to connect to the database
-    const db = await mongoose.connect(process.env.MONGODB_URI || "", {});
+    await mongoose.connect(process.env.MONGODB_URI!, {
+      serverSelectionTimeoutMS: 10000, // 10 seconds
+      socketTimeoutMS: 30000, // 30 seconds
+      maxPoolSize: 10, // Maintain up to 10 connections
+    });
 
-    connection.isConnected = db.connections[0].readyState;
-
-    console.log("Database connected successfully");
+    console.log("✅ MongoDB connected to:", {
+      host: mongoose.connection.host,
+      name: mongoose.connection.name,
+    });
   } catch (error) {
-    console.error("Database connection failed:", error);
-
-    // Graceful exit in case of a connection error
-    process.exit(1);
+    console.error("❌ MongoDB connection failed:", error);
+    throw error;
   }
 }
 
-export default dbConnect;
+mongoose.connection.on("connected", () => {
+  console.log("Mongoose connected");
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.warn("Mongoose disconnected");
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("Mongoose connection error:", err);
+});

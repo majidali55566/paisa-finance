@@ -26,7 +26,10 @@ const DashboardHeader = () => {
       <div className="w-full  px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between md:h-20">
           <div className="flex items-center">
-            <div className="flex items-center">
+            <div
+              onClick={() => router.push("/dashboard")}
+              className="flex items-center cursor-pointer"
+            >
               <h1 className="text-xl font-bold">
                 Paisa <span className="text-gray-400">Sambhalo</span>
               </h1>

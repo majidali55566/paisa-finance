@@ -50,6 +50,7 @@ const TransactionSchema: Schema<ITransaction> = new Schema(
     description: { type: String },
     transactionDate: { type: Date, default: Date.now },
     category: { type: String },
+    subcategory: { type: String },
     receiptUrl: { type: String },
     isRecurring: { type: Boolean, default: false },
     recurringInterval: {

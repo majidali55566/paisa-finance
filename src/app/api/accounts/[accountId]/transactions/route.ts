@@ -5,6 +5,7 @@ import { authOptions } from "../../../auth/[...nextauth]/options";
 import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
+import updateAccountBalance from "@/helpers/updateAccountBalance";
 export async function POST(
   req: NextRequest,
   { params }: { params: { accountId: string } }
@@ -27,8 +28,11 @@ export async function POST(
       isRecurring = false,
       recurringInterval,
       lastProcessed,
-      status,
+      subcategory,
+      status = "completed",
     } = await req.json();
+
+    console.log(category, subcategory);
 
     if (!accountId || !mongoose.Types.ObjectId.isValid(accountId)) {
       return NextResponse.json(
@@ -37,46 +41,68 @@ export async function POST(
       );
     }
 
-    let nextRecurringDate: Date | undefined = undefined;
+    const dbSession = await mongoose.startSession();
+    dbSession.startTransaction();
 
-    if (isRecurring && recurringInterval) {
-      const baseDate = transactionDate ? new Date(transactionDate) : new Date();
-      if (recurringInterval === RecurringInterval.DAILY) {
-        nextRecurringDate = addDays(baseDate, 1);
-      } else if (recurringInterval === RecurringInterval.WEEKLY) {
-        nextRecurringDate = addWeeks(baseDate, 1);
-      } else if (recurringInterval === RecurringInterval.MONTHLY) {
-        nextRecurringDate = addMonths(baseDate, 1);
-      } else if (recurringInterval === RecurringInterval.YEARLY) {
-        nextRecurringDate = addYears(baseDate, 1);
+    try {
+      let nextRecurringDate: Date | undefined = undefined;
+
+      if (isRecurring && recurringInterval) {
+        const baseDate = transactionDate
+          ? new Date(transactionDate)
+          : new Date();
+        if (recurringInterval === RecurringInterval.DAILY) {
+          nextRecurringDate = addDays(baseDate, 1);
+        } else if (recurringInterval === RecurringInterval.WEEKLY) {
+          nextRecurringDate = addWeeks(baseDate, 1);
+        } else if (recurringInterval === RecurringInterval.MONTHLY) {
+          nextRecurringDate = addMonths(baseDate, 1);
+        } else if (recurringInterval === RecurringInterval.YEARLY) {
+          nextRecurringDate = addYears(baseDate, 1);
+        }
       }
+
+      const newTransaction = await TransactionModel.create(
+        [
+          {
+            userId: session.user._id,
+            accountId,
+            amount,
+            type,
+            description,
+            transactionDate: transactionDate || new Date(),
+            category: category?.toLowerCase(),
+            receiptUrl,
+            subcategory: subcategory ? subcategory.toLowerCase() : undefined,
+            isRecurring,
+            recurringInterval: isRecurring ? recurringInterval : undefined,
+            nextRecurringDate,
+            lastProcessed,
+            status,
+          },
+        ],
+        { session: dbSession }
+      );
+
+      if (status === "completed") {
+        await updateAccountBalance(accountId, amount, type, dbSession);
+      }
+
+      await dbSession.commitTransaction();
+
+      return NextResponse.json(
+        {
+          message: "Transaction created successfully",
+          transaction: newTransaction[0],
+        },
+        { status: 201 }
+      );
+    } catch (error) {
+      await dbSession.abortTransaction();
+      throw error;
+    } finally {
+      dbSession.endSession();
     }
-
-    const newTransaction = new TransactionModel({
-      userId: session.user._id,
-      accountId,
-      amount,
-      type,
-      description,
-      transactionDate,
-      category: category?.toLowerCase(),
-      receiptUrl,
-      isRecurring,
-      recurringInterval,
-      nextRecurringDate,
-      lastProcessed,
-      status,
-    });
-
-    await newTransaction.save();
-
-    return NextResponse.json(
-      {
-        message: "Transaction created successfully",
-        transaction: newTransaction,
-      },
-      { status: 201 }
-    );
   } catch (err) {
     console.error("Transaction creation error:", err);
     return NextResponse.json(
@@ -114,7 +140,7 @@ export async function GET(
     const transactions = await TransactionModel.find({
       userId: session.user._id,
       accountId,
-    }).sort({ transactionDate: -1 });
+    }).sort({ createdAt: -1 });
 
     return NextResponse.json(
       { message: "Transactions fetched successfully", transactions },

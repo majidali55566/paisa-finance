@@ -5,8 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PiggyBank, Wallet } from "lucide-react";
-
+import { Edit, PiggyBank, Wallet } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Account } from "@/schemas/AccountSchema";
 import { Button } from "./ui/button";
@@ -15,9 +14,11 @@ import { useRouter } from "next/navigation";
 const AccountCard = ({
   account,
   onToggleDefault,
+  onHandleEdit,
 }: {
   account: Account;
   changeDefault: string;
+  onHandleEdit(account: Account): void;
   onToggleDefault: (accountId: string) => void;
 }) => {
   const AccountIcon = account.accountType === "current" ? Wallet : PiggyBank;
@@ -56,6 +57,7 @@ const AccountCard = ({
         >
           View details
         </Button>
+        <Edit onClick={() => onHandleEdit(account)} />
       </CardFooter>
     </Card>
   );

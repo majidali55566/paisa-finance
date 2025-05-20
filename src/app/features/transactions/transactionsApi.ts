@@ -3,7 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 export const createTransaction = createAsyncThunk<
-  Transaction,
+  Transaction, //return type
   CreateTransaction,
   { rejectValue: string }
 >("transactions/add", async (transactionData, { rejectWithValue }) => {

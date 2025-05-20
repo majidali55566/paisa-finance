@@ -37,11 +37,13 @@ import {
   SelectValue,
 } from "./ui/select";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Transaction {
   _id: string;
   amount: number;
   category: string;
+  accountId: string;
   createdAt: string;
   description: string;
   isRecurring: boolean;
@@ -54,10 +56,16 @@ interface Transaction {
   __v: number;
 }
 
-export function TransactionsTable({ data }: { data: Transaction[] }) {
+export function TransactionsTable({
+  data,
+  setTransactionForDeletion,
+}: {
+  data: Transaction[];
+  setTransactionForDeletion(id: string): void;
+}) {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [globalFilter, setGlobalFilter] = useState<string>("");
-
+  const router = useRouter();
   const filteredData = useMemo(() => {
     return data.filter((transaction) => {
       const typeMatch = typeFilter === "all" || transaction.type === typeFilter;
@@ -156,6 +164,7 @@ export function TransactionsTable({ data }: { data: Transaction[] }) {
         header: "Actions",
         cell: ({ row }) => {
           const transaction = row.original;
+          console.log(transaction._id);
           return (
             <div className="flex gap-2">
               <Button
@@ -196,15 +205,17 @@ export function TransactionsTable({ data }: { data: Transaction[] }) {
   });
 
   function onEdit(transaction: Transaction) {
-    console.log("on edit", transaction);
+    router.push(
+      `/dashboard/accounts/${transaction.accountId}/transactions/${transaction._id}/edit`
+    );
   }
   function onDelete(id: string) {
-    console.log("on delete", id);
+    setTransactionForDeletion(id);
   }
 
   return (
-    <div className="rounded-md border">
-      <div className="flex gap-4 items-center p-4">
+    <div className="rounded-md border grid gap-4">
+      <div className="flex gap-4 justify-between items-center p-4">
         <Input
           placeholder="Search description..."
           value={globalFilter}
@@ -225,6 +236,7 @@ export function TransactionsTable({ data }: { data: Transaction[] }) {
           </SelectContent>
         </Select>
       </div>
+
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

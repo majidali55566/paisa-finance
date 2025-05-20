@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { ArrowDownRight, ArrowUpRight, Clock, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils"; // Optional: for className merging
+import { cn } from "@/lib/utils";
 import axios from "axios";
 import { Transaction } from "../schemas/TransactionSchema";
 import { Badge } from "./ui/badge";

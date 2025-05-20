@@ -4,6 +4,8 @@ import {
   fetchAllAccounts,
   addAccount,
   changeDefaultAccount,
+  updateAccountDetails,
+  deleteAccount,
 } from "./accountsapi";
 
 interface AccountsState {
@@ -12,6 +14,8 @@ interface AccountsState {
   fetchStatus: "idle" | "loading" | "succeeded" | "failed";
   addStatus: "idle" | "loading" | "succeeded" | "failed";
   changeDefault: "idle" | "loading" | "succeeded" | "failed";
+  updateStatus: "idle" | "loading" | "succeeded" | "failed";
+  deleteStatus: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 const initialState: AccountsState = {
@@ -20,12 +24,19 @@ const initialState: AccountsState = {
   fetchStatus: "idle",
   addStatus: "idle",
   changeDefault: "idle",
+  deleteStatus: "idle",
+  updateStatus: "idle",
   error: null,
 };
 const accountSlice = createSlice({
   name: "accounts",
   initialState,
-  reducers: {},
+  reducers: {
+    clearAccountError: (state) => {
+      state.error = null;
+      state.updateStatus = "idle";
+    },
+  },
   extraReducers: (builder) => {
     builder
       //fetch accounts
@@ -77,8 +88,59 @@ const accountSlice = createSlice({
       .addCase(changeDefaultAccount.rejected, (state, action) => {
         state.changeDefault = "failed";
         state.error = action.payload as string;
+      })
+      //Update account
+      .addCase(updateAccountDetails.pending, (state) => {
+        state.updateStatus = "loading";
+        state.error = null;
+      })
+      .addCase(updateAccountDetails.fulfilled, (state, action) => {
+        state.updateStatus = "succeeded";
+        state.accounts = state.accounts.map((account) =>
+          account._id === action.payload._id ? action.payload : account
+        );
+
+        if (action.payload.isDefault) {
+          state.defaultAccountId = action.payload._id!;
+          state.accounts.forEach((acc) => {
+            acc.isDefault = acc._id === action.payload._id;
+          });
+        }
+      })
+      .addCase(updateAccountDetails.rejected, (state, action) => {
+        state.updateStatus = "failed";
+        state.error = action.payload as string;
+      })
+      //delete an account
+      // Delete Account
+      .addCase(deleteAccount.pending, (state) => {
+        state.deleteStatus = "loading";
+      })
+      .addCase(deleteAccount.fulfilled, (state, action) => {
+        state.deleteStatus = "succeeded";
+        // Remove deleted account
+        state.accounts = state.accounts.filter(
+          (acc) => acc._id !== action.payload.deletedAccountId
+        );
+
+        // Handle default account case
+        if (action.payload.wasDefault) {
+          state.defaultAccountId = action.payload.newDefaultAccountId;
+
+          // Update the new default account's status if it exists
+          if (action.payload.newDefaultAccountId) {
+            state.accounts = state.accounts.map((acc) => ({
+              ...acc,
+              isDefault: acc._id === action.payload.newDefaultAccountId,
+            }));
+          }
+        }
+      })
+      .addCase(deleteAccount.rejected, (state, action) => {
+        state.deleteStatus = "failed";
+        state.error = action.payload || "Failed to delete account";
       });
   },
 });
-
+export const { clearAccountError } = accountSlice.actions;
 export default accountSlice.reducer;

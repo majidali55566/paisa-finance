@@ -54,3 +54,41 @@ export const changeDefaultAccount = createAsyncThunk<
     );
   }
 });
+
+export const updateAccountDetails = createAsyncThunk<
+  Account,
+  Account,
+  { rejectValue: string }
+>("accounts/updateAccountDetails", async (account, { rejectWithValue }) => {
+  try {
+    const response = await axios.put(`/api/accounts/${account._id}`, account);
+    return response.data.account;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to update account"
+    );
+  }
+});
+
+export const deleteAccount = createAsyncThunk<
+  {
+    deletedAccountId: string;
+    wasDefault: boolean;
+    newDefaultAccountId: string | null;
+  },
+  string,
+  { rejectValue: string }
+>("accounts/delete", async (accountId, { rejectWithValue }) => {
+  try {
+    const response = await axios.delete(`/api/accounts/${accountId}`);
+    return {
+      deletedAccountId: accountId,
+      wasDefault: response.data.wasDefault,
+      newDefaultAccountId: response.data.newDefaultAccountId || null,
+    };
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to delete account"
+    );
+  }
+});
