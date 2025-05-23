@@ -1,5 +1,3 @@
-// src/lib/email.ts
-
 import { resend } from "@/lib/resend";
 import FinancialReportEmail from "../../emails/financialReportEmail";
 
@@ -11,6 +9,7 @@ export async function sendFinancialReport({
   periodEnd,
   periodStart,
   currentBalance,
+  aiInsights,
 }: {
   email: string;
   accountName: string;
@@ -19,6 +18,7 @@ export async function sendFinancialReport({
   income: { category: string; amount: number }[];
   expenses: { category: string; amount: number }[];
   currentBalance: number;
+  aiInsights: string;
 }) {
   try {
     await resend.emails.send({
@@ -32,6 +32,7 @@ export async function sendFinancialReport({
         accountName,
         expenses,
         currentBalance,
+        aiInsights,
       }),
     });
     return { success: true, message: "Financial report sent successfully" };

@@ -27,7 +27,7 @@ const DashboardHeader = () => {
         <div className="flex h-16 items-center justify-between md:h-20">
           <div className="flex items-center">
             <div
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/")}
               className="flex items-center cursor-pointer"
             >
               <h1 className="text-xl font-bold">

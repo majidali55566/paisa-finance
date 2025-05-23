@@ -1,4 +1,3 @@
-// src/lib/queue.ts
 import { Queue, QueueEvents } from "bullmq";
 import IORedis from "ioredis";
 
@@ -27,7 +26,7 @@ export const transactionQueue = new Queue("recurring-transactions", {
   },
 });
 
-// Optional: For monitoring
+//For monitoring
 export const queueEvents = new QueueEvents("recurring-transactions", {
   connection: redisConnection,
 });

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { TransactionsTable } from "@/components/TransactionsTable";
 import { TransactionConfirmationDialog } from "@/components/TransactionConfirmationDailog";
+import IncomeExpenseBarChart from "@/components/ExpenseIncomeBarChart";
 
 export default function AccountPage() {
   const params = useParams();
@@ -103,16 +104,18 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="mx-auto pt-6 md:pt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
-      <TransactionConfirmationDialog
-        open={isDeleteTransactionDialongOpen}
-        onClose={() => setIsDeleteTransactionDialongOpen(false)}
-        isSubmitting={isDeleteTransactionLoading}
-        handleSubmit={handleDelete}
-      />
+    <div className="mx-auto pt-20 md:pt-23 max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="grid gap-4">
-        <h1 className="text-2xl font-bold mb-6">Account: {account.name}</h1>
+        <TransactionConfirmationDialog
+          open={isDeleteTransactionDialongOpen}
+          onClose={() => setIsDeleteTransactionDialongOpen(false)}
+          isSubmitting={isDeleteTransactionLoading}
+          handleSubmit={handleDelete}
+        />
         <AccountBalanceManager account={account} transactions={transactions} />
+        <div>
+          <IncomeExpenseBarChart accountId={account._id} />
+        </div>
         <TransactionsTable
           setTransactionForDeletion={handleTransactionSelection}
           data={transactions}

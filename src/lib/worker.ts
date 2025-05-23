@@ -1,10 +1,9 @@
-// src/worker.ts
 import { Worker } from "bullmq";
 import { redisConnection } from "@/lib/queue";
 import TransactionModel from "@/models/transaction";
 import mongoose from "mongoose";
 import AccountModel from "@/models/Account";
-import { dbConnect } from "./dbConnect";
+import dbConnect from "./dbConnect";
 import { loadEnv } from "./env";
 import { sendAccountReports } from "./jobs/sendAccountReports";
 loadEnv();
@@ -98,6 +97,10 @@ function getNextRecurringDate(date: Date, interval: string): Date {
 }
 
 async function main() {
+  await import("@/models/User");
+  await import("@/models/Account");
+  await import("@/models/transaction");
+
   const worker = new Worker("recurring-transactions", processJob, {
     connection: redisConnection,
     concurrency: 3,

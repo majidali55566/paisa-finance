@@ -70,7 +70,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="pt-22 md:pt-25">
+    <div className="pt-22 md:pt-25 ">
       <div className="grid gap-6">
         {defaultAccount && (
           <div>

@@ -96,9 +96,7 @@ export function TransactionsTable({
         cell: ({ row }) => {
           const type = row.getValue("type");
           return (
-            <Badge
-              className={type === "income" ? "bg-green-600" : "bg-orange-600"}
-            >
+            <Badge className={type === "income" ? "bg-income" : "bg-expense"}>
               {type}
             </Badge>
           );
@@ -277,43 +275,47 @@ export function TransactionsTable({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-between px-4 py-2 border-t">
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
+      <div className="flex items-center justify-between px-4 py-2 border-t flex-wrap gap-2">
+        <div className="flex w-full md:w-auto items-center justify-between">
+          <div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronsLeft className="h-4 " />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeft className="h-4 " />
+            </Button>
+          </div>
+          <div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronRight className="h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronsRight className="h-4" />
+            </Button>
+          </div>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex w-full md:w-auto items-center justify-between space-x-4">
           <div className="text-sm text-muted-foreground">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}

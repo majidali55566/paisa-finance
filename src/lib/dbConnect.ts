@@ -1,4 +1,3 @@
-// src/lib/dbConnect.ts
 import mongoose from "mongoose";
 import { loadEnv } from "@/lib/env";
 loadEnv();
@@ -9,9 +8,9 @@ export default async function dbConnect(): Promise<void> {
 
   try {
     await mongoose.connect(process.env.MONGODB_URI!, {
-      serverSelectionTimeoutMS: 10000, // 10 seconds
-      socketTimeoutMS: 30000, // 30 seconds
-      maxPoolSize: 10, // Maintain up to 10 connections
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 60000,
+      maxPoolSize: 10,
     });
 
     console.log("✅ MongoDB connected to:", {

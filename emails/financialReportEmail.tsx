@@ -1,4 +1,3 @@
-// src/emails/FinancialReportEmail.tsx
 import {
   Html,
   Head,
@@ -10,6 +9,7 @@ import {
   Text,
   Column,
 } from "@react-email/components";
+import * as React from "react";
 
 interface FinancialReportEmailProps {
   accountName: string;
@@ -18,6 +18,7 @@ interface FinancialReportEmailProps {
   income: { category: string; amount: number }[];
   expenses: { category: string; amount: number }[];
   currentBalance: number;
+  aiInsights: string;
 }
 
 export default function FinancialReportEmail({
@@ -27,10 +28,10 @@ export default function FinancialReportEmail({
   income,
   expenses,
   currentBalance,
+  aiInsights,
 }: FinancialReportEmailProps) {
   const totalIncome = income.reduce((sum, i) => sum + i.amount, 0);
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-
   return (
     <Html lang="en" dir="ltr">
       <Head>
@@ -57,13 +58,11 @@ export default function FinancialReportEmail({
             {accountName} Financial Report
           </Heading>
         </Row>
-
         <Row>
           <Text style={periodText}>
             {periodStart.toDateString()} - {periodEnd.toDateString()}
           </Text>
         </Row>
-
         <Section style={section}>
           <Row>
             <Heading as="h3" style={sectionHeading}>
@@ -81,7 +80,6 @@ export default function FinancialReportEmail({
             <Column style={amountColumn}>${totalIncome.toFixed(2)}</Column>
           </Row>
         </Section>
-
         <Section style={section}>
           <Row>
             <Heading as="h3" style={sectionHeading}>
@@ -99,14 +97,25 @@ export default function FinancialReportEmail({
             <Column style={amountColumn}>${totalExpenses.toFixed(2)}</Column>
           </Row>
         </Section>
-
         <Section style={summarySection}>
           <Row>
             <Column style={balanceLabel}>Current Balance:</Column>
             <Column style={balanceAmount}>${currentBalance.toFixed(2)}</Column>
           </Row>
         </Section>
-
+        <Section style={aiInsightsSection}>
+          <Row>
+            <Heading as="h3" style={aiInsightsHeading}>
+              Ai Insights
+            </Heading>
+          </Row>
+          <Row>
+            <div
+              style={aiInsightsText}
+              dangerouslySetInnerHTML={{ __html: aiInsights }}
+            />
+          </Row>
+        </Section>
         <Row>
           <Text style={footerText}>
             This is an automated report. Please contact support if you have any
@@ -118,7 +127,6 @@ export default function FinancialReportEmail({
   );
 }
 
-// Styles
 const main = {
   backgroundColor: "#ffffff",
   fontFamily: "Roboto, Verdana, sans-serif",
@@ -181,6 +189,27 @@ const balanceAmount = {
   fontSize: "18px",
   color: "#2a6496",
   textAlign: "right" as const,
+};
+
+const aiInsightsSection = {
+  margin: "25px 0",
+  padding: "15px",
+  backgroundColor: "#f8f9fa",
+  borderRadius: "5px",
+  borderLeft: "4px solid #4a90e2",
+};
+
+const aiInsightsHeading = {
+  color: "#4a90e2",
+  fontSize: "16px",
+  marginBottom: "10px",
+};
+
+const aiInsightsText = {
+  color: "#555",
+  fontSize: "14px",
+  lineHeight: "1.5",
+  whiteSpace: "pre-line" as const,
 };
 
 const footerText = {

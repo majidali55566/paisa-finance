@@ -1,19 +1,16 @@
-// src/lib/scheduler.ts
 import AccountModel from "@/models/Account";
 import { transactionQueue } from "./queue";
 import dbConnect from "./dbConnect";
 
 export async function scheduleRecurringTransactions() {
   try {
-    await dbConnect(); // Ensure DB connection
+    await dbConnect();
 
-    // Clear existing jobs
     const jobs = await transactionQueue.getRepeatableJobs();
     await Promise.all(
       jobs.map((job) => transactionQueue.removeRepeatableByKey(job.key))
     );
 
-    // Schedule daily transactions
     await transactionQueue.add(
       "process-recurring-transactions",
       {},
@@ -23,26 +20,28 @@ export async function scheduleRecurringTransactions() {
       }
     );
 
-    // Schedule test reports (every 5 minutes)
-    const accounts = await AccountModel.find({}).maxTimeMS(15000);
+    const account = await AccountModel.findOne({
+      isDefault: true,
+    }).maxTimeMS(15000);
 
-    for (const account of accounts) {
-      await transactionQueue.add(
-        "generate-weekly-reports",
-        {
-          accountId: account._id,
-          isTestRun: true,
-        },
-        {
-          repeat: { pattern: "*/5 * * * *" },
-          jobId: `weekly-report-test-${account._id}`,
-        }
-      );
+    if (!account) {
+      throw new Error("No default account found");
     }
+
+    await transactionQueue.add(
+      "generate-weekly-reports",
+      {
+        accountId: account._id,
+      },
+      {
+        repeat: { pattern: "0 0 * * 0" }, // Runs at midnight every Sunday
+        jobId: `weekly-report-${account._id}`,
+      }
+    );
 
     console.log(`Scheduled:
       - Daily transactions at midnight
-      - Test reports every 5 minutes for ${accounts.length} accounts`);
+      - Weekly reports every Sunday for account ${account._id}`);
   } catch (error) {
     console.error("Scheduling failed:", error);
     throw error;

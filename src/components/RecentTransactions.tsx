@@ -98,8 +98,8 @@ const RecentTransactions = () => {
                     className={cn(
                       "font-medium flex items-center",
                       transaction.type === "expense"
-                        ? "text-red-500"
-                        : "text-green-500"
+                        ? "clr-expense"
+                        : "clr-income"
                     )}
                   >
                     {transaction.type === "expense" ? (
@@ -124,11 +124,11 @@ const RecentTransactions = () => {
 
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
-          <ArrowUpRight className="text-green-500" size={16} />
+          <ArrowUpRight className="clr-income" size={16} />
           <span>Income</span>
         </div>
         <div className="flex items-center gap-1">
-          <ArrowDownRight className="text-red-500" size={16} />
+          <ArrowDownRight className="clr-expense" size={16} />
           <span>Expense</span>
         </div>
       </div>
