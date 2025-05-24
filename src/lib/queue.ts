@@ -1,8 +1,9 @@
 import { Queue, QueueEvents } from "bullmq";
 import IORedis from "ioredis";
+import { loadEnv } from "./env";
+loadEnv();
 
-const redisUri =
-  "redis://default:AS2fAAIjcDFlOTVmZTYzYTc5OWI0YjVhYjQwZTEyMWVmZDkwNzJlOHAxMA@ready-lamprey-11679.upstash.io:6379";
+const redisUri = process.env.REDIS_URL;
 export const redisConnection = new IORedis(redisUri, {
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
