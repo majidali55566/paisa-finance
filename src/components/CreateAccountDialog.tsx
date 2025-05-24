@@ -42,7 +42,7 @@ export function CreateAccountDialog() {
   };
 
   return (
-    <div>
+    <div className="">
       <Card
         onClick={() => setIsOpen(true)}
         className="cursor-pointer hover:bg-muted/50 transition-colors h-30 flex items-center justify-center p-6 border-dashed border-2 hover:border-solid hover:border-primary/20"

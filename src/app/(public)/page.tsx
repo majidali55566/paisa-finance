@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LandingPage() {
   return (
@@ -39,7 +40,7 @@ export default function LandingPage() {
         </div>
         <div className="mx-auto relative">
           <Button className="py-6 md:py-8 font-bold rounded-lg text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-primary/30">
-            Get Started Free
+            <Link href="/dashboard"> Get Started Free</Link>
           </Button>
         </div>
         <div className="flex flex-col items-center relative z-40">
@@ -230,7 +231,7 @@ export default function LandingPage() {
 
           <div className="mt-12 text-center">
             <Button className="py-6 md:py-8 font-bold rounded-lg text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-primary/30">
-              Get Started Free
+              <Link href="/dashboard"> Get Started Free</Link>
             </Button>
           </div>
         </div>

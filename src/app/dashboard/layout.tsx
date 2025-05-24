@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { useEffect } from "react";
 import { fetchAllAccounts } from "../features/accounts/accountsapi";
 import { getAccountTransactions } from "../features/transactions/transactionsApi";
+import Footer from "@/components/Footer";
+import { FloatingAddButton } from "@/components/FloatingAddButton";
 
 export default function DashboardLayout({
   children,
@@ -13,6 +15,7 @@ export default function DashboardLayout({
 }) {
   const dispatch = useAppDispatch();
   const { defaultAccountId } = useAppSelector((state) => state.accounts);
+
   useEffect(() => {
     dispatch(fetchAllAccounts());
   }, []);
@@ -22,11 +25,14 @@ export default function DashboardLayout({
       dispatch(getAccountTransactions({ accountId: defaultAccountId }));
     }
   });
+
   return (
-    <div className="mx-auto min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto min-h-screen">
       <DashboardHeader />
       <main>{children}</main>
+      <FloatingAddButton />
       <Toaster richColors />
+      <Footer />
     </div>
   );
 }

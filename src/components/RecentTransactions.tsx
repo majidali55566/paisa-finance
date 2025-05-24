@@ -57,15 +57,15 @@ const RecentTransactions = () => {
   }, [selectedAccountId, defaultAccountId]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 border p-4 rounded-xl">
       <FormProvider {...form}>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center flex-wrap justify-between gap-4">
           <h2 className="font-semibold">Recent Transactions</h2>
           <AccountSelect
             accounts={accounts}
             value={form.getValues("accountId")}
             onValueChange={(value) => form.setValue("accountId", value)}
-            className="min-w-[200px]"
+            className=""
           />
         </div>
 

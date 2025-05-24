@@ -34,7 +34,7 @@ export async function scheduleRecurringTransactions() {
         accountId: account._id,
       },
       {
-        repeat: { pattern: "0 0 * * 0" }, // Runs at midnight every Sunday
+        repeat: { pattern: "0 0 * * 0" },
         jobId: `weekly-report-${account._id}`,
       }
     );

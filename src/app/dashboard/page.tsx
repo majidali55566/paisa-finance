@@ -70,8 +70,8 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="pt-22 md:pt-25 ">
-      <div className="grid gap-6">
+    <div className="w-full mx-auto max-w-7xl px-5 pb-5">
+      <div className="grid gap-6 pt-22 md:pt-25">
         {defaultAccount && (
           <div>
             <AccountBalanceStatics
@@ -88,15 +88,17 @@ const Dashboard = () => {
           />
         )}
 
-        <div className="flex justify-around flex-wrap gap-4">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <RecentTransactions />
           <MonthlyExpensePieChart />
           <CreateAccountDialog />
         </div>
 
-        <div className="grid gap-4">
-          <h1 className="text-xl font-semibold">Your accounts</h1>
-          <div className="flex flex-wrap gap-4 items-center">
+        <div className="grid gap-6 pt-5">
+          <h1 className="text-xl font-semibold text-center">
+            Manage Your Acconts
+          </h1>
+          <div className="">
             {error ? (
               <div className="text-red-500 mt-6 w-full text-center">
                 <p>Error: {error}</p>
@@ -110,7 +112,7 @@ const Dashboard = () => {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-wrap gap-4 mx-auto justify-center items-center">
+              <div className="mx-auto grid items-center gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {accounts.map((account) => (
                   <AccountCard
                     changeDefault={changeDefault}
