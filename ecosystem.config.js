@@ -2,17 +2,17 @@ console.log(process.env.REDIS_URL);
 module.exports = {
   apps: [
     // Next.js application
-    // {
-    //   name: "next-app",
-    //   script: "npm",
-    //   args: "run start",
-    //   cwd: __dirname,
-    //   watch: false, // Disable watch in production
-    //   env_production: {
-    //     NODE_ENV: "production",
-    //     PORT: 3000,
-    //   },
-    // },
+    {
+      name: "next-app",
+      script: "npm",
+      args: "run start",
+      cwd: __dirname,
+      watch: false, // Disable watch in production
+      env_production: {
+        NODE_ENV: "production",
+        PORT: 3000,
+      },
+    },
 
     // BullMQ worker
     {
