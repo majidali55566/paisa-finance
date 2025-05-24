@@ -26,8 +26,7 @@ module.exports = {
       watch: false,
       env: {
         NODE_ENV: "development",
-        REDIS_URL:
-          "redis://default:AS2fAAIjcDFlOTVmZTYzYTc5OWI0YjVhYjQwZTEyMWVmZDkwNzJlOHAxMA@ready-lamprey-11679.upstash.io:6379",
+        REDIS_URL: process.env.REDIS_URL,
       },
       max_memory_restart: "500M",
     },
