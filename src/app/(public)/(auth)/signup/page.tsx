@@ -9,13 +9,7 @@ import axios, { AxiosError } from "axios";
 import { signUpSchema } from "@/schemas/SignUpSchema";
 import { toast } from "sonner";
 import { ApiResponse } from "@/types/apiResponse";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";

@@ -26,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
 import {
   Account,
@@ -36,6 +35,7 @@ import {
 } from "@/schemas/AccountSchema";
 import { AccountType } from "@/models/Account";
 import { useEffect } from "react";
+import { Switch } from "@/components/ui/switch";
 
 interface AccountFormProps {
   onSubmit: (data: CreateAccount | Account) => Promise<void>;

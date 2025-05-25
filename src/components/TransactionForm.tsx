@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { CalendarIcon, Loader2, UploadIcon } from "lucide-react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import {
@@ -8,14 +8,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
 import { defaultCategories } from "@/lib/categories";
 import {
   CreateTransaction,
@@ -30,14 +30,14 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
-import { Calendar } from "./ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 import { AccountSelect } from "./AccountSelect";
 import { Switch } from "./ui/switch";
 import { Account } from "@/schemas/AccountSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { Input } from "./ui/input";
+import { Input } from "@/components/ui/input";
 interface TransactionFormProps {
   defaultValues?: Transaction;
   onSubmit: (data: CreateTransaction) => Promise<void>;
