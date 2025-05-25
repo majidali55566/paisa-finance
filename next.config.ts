@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
         hostname: "i.pravatar.cc",
       },
     ],
+    unoptimized: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
