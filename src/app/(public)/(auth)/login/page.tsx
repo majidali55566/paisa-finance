@@ -3,7 +3,13 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import { signInSchema } from "@/schemas/SignInSchema";
 import * as z from "zod";
