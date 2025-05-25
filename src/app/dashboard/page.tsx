@@ -22,7 +22,6 @@ const Dashboard = () => {
     useAppSelector((state) => state.accounts);
 
   const [isEditAccountDialogOpen, setEditAccountDialogOpen] = useState(false);
-  const [isAccountEditing, setAccountEditing] = useState(false);
 
   const { transactions } = useAppSelector((state) => state.transactions);
   const [selectedAccountForDialog, setselectedAccountForDialog] =
@@ -38,8 +37,6 @@ const Dashboard = () => {
     } catch (error) {
       toast.error("unexpected error occurred");
       console.log("Error changing default account", error);
-    } finally {
-      setAccountEditing(false);
     }
   };
   useEffect(() => {

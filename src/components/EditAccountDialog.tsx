@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import AccountForm from "./AccountForm";
 import { Account, AccountSchema } from "@/schemas/AccountSchema";
 import { toast } from "sonner";
@@ -31,7 +30,7 @@ const EditAccountDialog = ({
 
       if (updateAccountDetails.fulfilled.match(result)) {
         toast.success("Account updated successfully!");
-        onOpenClose(false);
+        onOpenClose();
       } else if (updateAccountDetails.rejected.match(result)) {
         toast.error(result.payload || "Failed to update account");
       }

@@ -30,7 +30,7 @@ import {
 } from "@/models/transaction";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
-import { format, formatDate, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { Calendar } from "./ui/calendar";
 import { AccountSelect } from "./AccountSelect";
 import { Switch } from "./ui/switch";

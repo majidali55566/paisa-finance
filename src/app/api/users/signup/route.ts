@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   await dbConnect();
   try {
     const { email, password, username } = await request.json();
-    let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
