@@ -3,13 +3,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./";
 import { Loader2 } from "lucide-react";
 import { signInSchema } from "@/schemas/SignInSchema";
 import * as z from "zod";
@@ -67,7 +61,6 @@ export default function SignInPage() {
       <div className="grid gap-2 p-6 bg-white rounded-lg shadow-md">
         <h1 className="text-2xl text-center font-medium">Login</h1>
 
-        {/* Email & Password Sign-In */}
         <FormProvider {...form}>
           <form className="space-y-2" onSubmit={form.handleSubmit(onsubmit)}>
             <FormField
@@ -77,7 +70,11 @@ export default function SignInPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="email" {...field} />
+                    <Input
+                      placeholder="Email"
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -90,7 +87,11 @@ export default function SignInPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="password" {...field} />
+                    <Input
+                      placeholder="password"
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

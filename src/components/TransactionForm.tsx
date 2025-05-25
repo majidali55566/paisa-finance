@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Input } from "./ui/input";
 import { defaultCategories } from "@/lib/categories";
 import {
   CreateTransaction,
@@ -38,6 +37,7 @@ import { Account } from "@/schemas/AccountSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import { Input } from "./ui/input";
 interface TransactionFormProps {
   defaultValues?: Transaction;
   onSubmit: (data: CreateTransaction) => Promise<void>;
@@ -191,7 +191,6 @@ const TransactionForm = ({
           <input {...getInputProps()} />
           {isProcessingImage ? (
             <div className="flex flex-col items-center justify-center gap-4">
-              {/* Colorful orbiting dots */}
               <div className="relative h-24 w-24">
                 {["#3B82F6", "#8B5CF6", "#EC4899"].map((color, i) => (
                   <div
@@ -207,7 +206,6 @@ const TransactionForm = ({
                     }}
                   />
                 ))}
-                {/* Center dot */}
                 <div className="absolute top-1/2 left-1/2 h-3 w-3 rounded-full bg-white transform -translate-x-1/2 -translate-y-1/2" />
               </div>
               <span className="text-sm font-medium">Processing receipt...</span>
@@ -220,7 +218,6 @@ const TransactionForm = ({
                 AI automatically extract transaction details
               </p>
 
-              {/* Floating background dots */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {[...Array(12)].map((_, i) => {
                   const size = Math.random() * 6 + 4;
@@ -257,7 +254,6 @@ const TransactionForm = ({
             </>
           )}
 
-          {/* Animation styles */}
           <style jsx global>{`
             @keyframes orbit {
               0% {
