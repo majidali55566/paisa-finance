@@ -3,7 +3,12 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["i.pravatar.cc"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,
