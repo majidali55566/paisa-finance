@@ -39,6 +39,7 @@ export default function SignInPage() {
         email: data.email,
         password: data.password,
       });
+      console.log(response);
       if (response?.ok) {
         toast.success("Login successfull");
         router.replace("/dashboard");

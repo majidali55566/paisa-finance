@@ -9,13 +9,15 @@ import { CreateAccountSchema } from "@/schemas/AccountSchema";
 export async function POST(req: NextRequest) {
   await dbConnect();
   const session = await getServerSession(authOptions);
-  console.log(session);
+
   if (!session || !session.user?.email) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
+
   try {
     const body = await req.json();
     const parsed = CreateAccountSchema.safeParse(body);
+
     if (!parsed.success) {
       return NextResponse.json(
         {
@@ -25,34 +27,50 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
     const { name, accountType, balance, isDefault } = parsed.data;
-
     const user = await UserModel.findOne({ email: session.user.email });
-    if (!user)
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
 
-    if (isDefault) {
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    const existingAccounts = await AccountModel.find({ userId: user._id });
+
+    let shouldBeDefault = isDefault;
+
+    if (existingAccounts.length === 0) {
+      shouldBeDefault = true;
+    }
+
+    if (shouldBeDefault) {
       await AccountModel.updateMany(
         { userId: user._id, isDefault: true },
         { $set: { isDefault: false } }
       );
     }
+
     const newAccount = new AccountModel({
       userId: user._id,
       name,
       accountType,
       balance: Number(balance),
-      isDefault: isDefault || false,
+      isDefault: shouldBeDefault,
     });
+
     const savedAccount = await newAccount.save();
+
     return NextResponse.json(
-      { message: "Account created succesfully", account: savedAccount },
+      {
+        message: "Account created successfully",
+        account: savedAccount,
+        wasForcedDefault: existingAccounts.length === 0 && !isDefault,
+      },
       { status: 201 }
     );
   } catch (error) {
     console.log("Error creating account", error);
-
-    return Response.json(
+    return NextResponse.json(
       {
         message: "Something went wrong while creating account",
       },
