@@ -72,6 +72,7 @@ const TransactionForm = ({
       ...defaultValues,
     },
   });
+  console.log(form.getValues());
 
   const transactionType = useWatch({ control: form.control, name: "type" });
   const selectedCategory = useWatch({
@@ -111,6 +112,7 @@ const TransactionForm = ({
         const errorData = await response.json();
         console.log(errorData);
         toast.error("Failed to process image");
+        return;
       }
 
       if (response.status === 200) {
@@ -138,7 +140,6 @@ const TransactionForm = ({
         }
         console.log(type);
 
-        // Handle category matching
         if (category) {
           const normalizedCategory = category.toLowerCase().trim();
           const matchedCategory = defaultCategories.find(
@@ -480,7 +481,18 @@ const TransactionForm = ({
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
+                            onSelect={(date) => {
+                              if (date) {
+                                const currentValue = field.value || new Date();
+                                const newDate = new Date(date);
+                                newDate.setHours(
+                                  currentValue.getHours(),
+                                  currentValue.getMinutes(),
+                                  currentValue.getSeconds()
+                                );
+                                field.onChange(newDate);
+                              }
+                            }}
                             disabled={(date) =>
                               date > new Date() || date < new Date("1900-01-01")
                             }

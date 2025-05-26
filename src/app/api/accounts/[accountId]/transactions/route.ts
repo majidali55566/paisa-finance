@@ -32,7 +32,7 @@ export async function POST(
       status = "completed",
     } = await req.json();
 
-    console.log(category, subcategory);
+    console.log("transactionDate", transactionDate);
 
     if (!accountId || !mongoose.Types.ObjectId.isValid(accountId)) {
       return NextResponse.json(

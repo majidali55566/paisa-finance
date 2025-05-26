@@ -38,7 +38,7 @@ export async function GET(
     const transactions = await TransactionModel.find({
       accountId,
       transactionDate: { $gte: startDate, $lte: endDate },
-    }).sort({ date: 1 });
+    }).sort({ transactionDate: 1 });
 
     if (!transactions)
       return NextResponse.json(
